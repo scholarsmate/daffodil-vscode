@@ -1,0 +1,1 @@
+Ωedit powers the “Data Editor” feature in Apache Daffodil™ Extension for Visual Studio Code.

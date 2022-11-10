@@ -55,6 +55,9 @@ tmp.*
 # ignore omega-edit scala server package file
 src/omega_edit/omega-edit-scala-server*
 
+# ignore generated Javascript
+src/dataEditor/scripts
+
 # ignore generated docs
 docs/*.docx
 docs/.wiki/

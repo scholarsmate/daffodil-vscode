@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Data Editor</title>
+    <script src="scripts/data_editor.js" type="module"></script>
+    <link href="styles/data_editor.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<header>
+    <fieldset class='box'>
+        <legend>file to view</legend>
+        <div class='filetoview'>
+            <input type="file" id="file_input"/>
+        </div>
+        <div id="file_metrics_vw" hidden>
+            <hr/>file type: <span id="file_type">-</span>
+            <br/>file size: <span id="file_byte_cnt">0</span>
+            <br/>ASCII count: <span id="ascii_byte_cnt">0</span>
+        </div>
+    </fieldset>
+    <fieldset class='box'>
+        <legend>offset</legend>
+        <div class='goto_offset'>
+            <input type="number" id="goto_offset" min="0" max="0"/>
+        </div>
+    </fieldset>
+    <fieldset class='box'>
+        <legend>radix</legend>
+        <div class='radix'>
+            <select id="radix">
+                <option value="2">2 (BIN)</option>
+                <option value="8">8 (OCT)</option>
+                <option value="10">10 (DEC)</option>
+                <option value="16" selected>16 (HEX)</option>
+            </select>
+        </div>
+    </fieldset>
+    <fieldset class='box'>
+        <legend>misc</legend>
+        <div class='radix'>
+            <label>advanced mode<input type='checkbox' id='advanced_mode' checked></label>
+        </div>
+    </fieldset>
+</header>
+
+<main class="dataEditor" id="data_editor">
+    <div class="hd">address</div>
+    <div class="hd">physical</div>
+    <div class="hd">logical</div>
+    <div class="hd">edit</div>
+    <div class="measure" style="align-items: center;">
+        <select class="address_type" id="address_numbering">
+            <option value="10">decimal</option>
+            <option value="16">hexadecimal</option>
+            <option value="8">octal</option>
+            <option value="2">binary</option>
+        </select>
+    </div>
+    <div class="measure"><span id="physical_offsets"></span></div>
+    <div class="measure"><span id="logical_offsets"></span></div>
+    <div class="measure">
+        <div>
+            <span id="selected_offsets">-</span><br/>
+            <span id="editor_offsets">-</span>
+        </div>
+    </div>
+    <textarea class="address_vw" id="address" readonly></textarea>
+    <textarea class="physical_vw" id="physical" readonly></textarea>
+    <textarea class="logicalView" id="logical" readonly></textarea>
+    <div class="editView" id="edit_view">
+        <textarea class="selectedContent" id="editor"></textarea>
+        <fieldset class='box'>
+            <legend>content controls</legend>
+            <div class="contentControls" id="content_controls">
+                <div>
+                    <button id="commit_btn" onclick="alert('committed - not implemented yet');" disabled>
+                        commit changes
+                    </button>
+                    committed changes: <span id="change_cnt">0</span>
+                    <button id="add_data_breakpoint_btn" onclick="alert('breakpoint set - not implemented yet');"
+                            disabled>
+                        set breakpoint
+                    </button>
+                    breakpoints: <span id="data_breakpoint_cnt">0</span>
+                </div>
+                <hr/>
+                <div class="grid-container-two-columns">
+                    <div class="grid-container-column">
+                        <div>
+                            <label>endianness:
+                            <select id="endianness">
+                                <option value="le">little</option>
+                                <option value="be">big</option>
+                            </select>
+                            </label>
+                        </div>
+                        <div>
+                            <label>encoding:
+                            <select id="edit_encoding">
+                                <optgroup label="Binary Encodings">
+                                    <option value="hex">Hexadecimal</option>
+                                    <option value="binary">Binary</option>
+                                    <option value="base64">Base64</option>
+                                </optgroup>
+                                <optgroup label="Single-Byte Character Encodings">
+                                    <option value="ascii">ASCII (7-bit)</option>
+                                    <option value="latin1">ISO-8859-1 (8-bit)</option>
+                                </optgroup>
+                                <optgroup label="Multi-Byte Character Encodings">
+                                    <option value="ucs2">UCS-2</option>
+                                    <option value="utf-8" selected>UTF-8</option>
+                                    <option value="utf-16le">UTF-16LE</option>
+                                </optgroup>
+                            </select>
+                            </label>
+                        </div>
+                        <div class="advanced">
+                            <label>least significant bit:
+                            <select id="lsb">
+                                <option value="h">higher offset</option>
+                                <option value="l">lower offset</option>
+                            </select>
+                            </label>
+                        </div>
+                        <div class="advanced">
+                            <label>logical byte size:
+                                <select id="logical_byte_size">
+                                    <option>8</option>
+                                    <option>7</option>
+                                    <option>6</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="grid-container-column">
+                        <div id="data_vw" hidden>
+                            &nbsp;offset: <span id="offset_dv">-</span>
+                            <span id="b8_dv">
+                                <br/><label>&nbsp;&nbsp;&nbsp;int8: <input type="number" inputmode="numeric" id="int8_dv" min="-128" max="127" maxlength="4" step="1" pattern="[+-]?\d*"/></label>
+                                <br/><label>&nbsp;&nbsp;uint8: <input type="number" inputmode="numeric" id="uint8_dv" min="0" max="256" maxlength="3" step="1" pattern="\d*"/></label>
+                            </span>
+                            <span id="b16_dv">
+                                <br/><label>&nbsp;&nbsp;int16: <input type="number" inputmode="numeric" id="int16_dv" min="-32768" max="32767" maxlength="6" step="1" pattern="[+-]?\d*"/></label>
+                                <br/><label>&nbsp;uint16: <input type="number" inputmode="numeric" id="uint16_dv" min="0" max="65535"maxlength="5" step="1" pattern="\d*"/></label>
+                            </span>
+                            <span id="b32_dv">
+                                <br/><label>&nbsp;&nbsp;int32: <input type="number" inputmode="numeric" id="int32_dv" min="-2147483648" max="2147483647" maxlength="11" step="1" pattern="[+-]?\d*"/></label>
+                                <br/><label>&nbsp;uint32: <input type="number" inputmode="numeric" id="uint32_dv" min="0" max="4294967295" maxlength="10" step="1" pattern="\d*"/></label>
+                                <br/><label>float32: <input type="number" inputmode="numeric" id="float32_dv"/></label>
+                            </span>
+                            <span id="b64_dv">
+                                <br/><label>&nbsp;&nbsp;int64: <input type="number" inputmode="numeric" id="int64_dv" min="-9223372036854775808" max="9223372036854775807" maxlength="20" step="1" pattern="[+-]?\d*"/></label>
+                                <br/><label>&nbsp;uint64: <input type="number" inputmode="numeric" id="uint64_dv" min="0" max="184467440737095551615" maxlength="20" step="1" pattern="\d*"/></label>
+                                <br/><label>float64: <input type="number" inputmode="numeric" id="float64_dv"/></label>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</main>
+
+</body>
+</html>

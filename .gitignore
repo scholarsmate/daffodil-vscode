@@ -49,6 +49,9 @@ src/version.ts
 datafile-hex
 npm-debug.log
 
+# ignore generated scripts
+src/data_editor/scripts
+
 # tmp files
 tmp.*
 

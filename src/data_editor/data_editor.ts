@@ -54,6 +54,7 @@ interface EditorElements {
   file_type: HTMLElement
   file_metrics_vw: HTMLElement
   goto_offset: HTMLInputElement
+  radix: HTMLInputElement
   data_vw: HTMLElement
   b8_dv: HTMLElement
   b16_dv: HTMLElement
@@ -119,6 +120,7 @@ function init() {
         'add_data_breakpoint_btn'
       ) as HTMLInputElement,
       goto_offset: document.getElementById('goto_offset') as HTMLInputElement,
+      radix: document.getElementById('radix') as HTMLInputElement,
       data_vw: document.getElementById('data_vw') as HTMLElement,
       b8_dv: document.getElementById('b8_dv') as HTMLElement,
       b16_dv: document.getElementById('b16_dv') as HTMLElement,
@@ -176,6 +178,15 @@ function init() {
       handleSelected(
         frameSelected(window.data_editor_state.editor_elements.logical)
       )
+  )
+  window.data_editor_state.editor_elements.radix.addEventListener(
+    'change',
+    () => {
+      window.data_editor_state.editor_controls.radix = parseInt(
+        window.data_editor_state.editor_elements.radix.value
+      )
+      updateDataView()
+    }
   )
   window.data_editor_state.editor_elements.int8_dv.addEventListener(
     'change',
@@ -295,7 +306,9 @@ function init() {
       refreshEditor()
     }
   )
-  const advanced_mode = document.getElementById('advanced_mode') as HTMLInputElement
+  const advanced_mode = document.getElementById(
+    'advanced_mode'
+  ) as HTMLInputElement
   advanced_mode.addEventListener('change', () =>
     enableAdvanced(advanced_mode.checked)
   )
@@ -405,13 +418,25 @@ function init() {
 }
 
 function storeCursorPos() {
-  window.data_editor_state.editor_controls.editor_cursor_pos = window.data_editor_state.editor_elements.editor.selectionStart
-  window.data_editor_state.editor_controls.editor_selection_start = window.data_editor_state.editor_elements.editor.selectionStart
-  window.data_editor_state.editor_controls.editor_selection_end = window.data_editor_state.editor_elements.editor.selectionEnd
-  window.data_editor_state.editor_elements.editor_offsets.innerHTML = (window.data_editor_state.editor_controls.editor_selection_start === window.data_editor_state.editor_controls.editor_selection_end) ?
-    'cursor: ' + String(window.data_editor_state.editor_controls.editor_cursor_pos) :
-    'start: ' + String(window.data_editor_state.editor_controls.editor_selection_start) + ', end: ' + String(window.data_editor_state.editor_controls.editor_selection_end) + ', cursor: ' +
-    String(window.data_editor_state.editor_controls.editor_cursor_pos)
+  window.data_editor_state.editor_controls.editor_cursor_pos =
+    window.data_editor_state.editor_elements.editor.selectionStart
+  window.data_editor_state.editor_controls.editor_selection_start =
+    window.data_editor_state.editor_elements.editor.selectionStart
+  window.data_editor_state.editor_controls.editor_selection_end =
+    window.data_editor_state.editor_elements.editor.selectionEnd
+  window.data_editor_state.editor_elements.editor_offsets.innerHTML =
+    window.data_editor_state.editor_controls.editor_selection_start ===
+    window.data_editor_state.editor_controls.editor_selection_end
+      ? 'cursor: ' +
+        String(window.data_editor_state.editor_controls.editor_cursor_pos)
+      : 'start: ' +
+        String(
+          window.data_editor_state.editor_controls.editor_selection_start
+        ) +
+        ', end: ' +
+        String(window.data_editor_state.editor_controls.editor_selection_end) +
+        ', cursor: ' +
+        String(window.data_editor_state.editor_controls.editor_cursor_pos)
   updateDataView()
 }
 
@@ -419,7 +444,10 @@ function selectEndianness(endianness: string) {
   window.data_editor_state.editor_controls.little_endian = endianness == 'le'
   updateDataView()
   window.data_editor_state.editor_elements.editor.focus()
-  window.data_editor_state.editor_elements.editor.setSelectionRange(window.data_editor_state.editor_controls.editor_selection_start, window.data_editor_state.editor_controls.editor_selection_end)
+  window.data_editor_state.editor_elements.editor.setSelectionRange(
+    window.data_editor_state.editor_controls.editor_selection_start,
+    window.data_editor_state.editor_controls.editor_selection_end
+  )
 }
 
 function loadContent(files: FileList | null) {
@@ -458,11 +486,12 @@ function loadContent(files: FileList | null) {
         countAscii(data)
       window.data_editor_state.editor_elements.ascii_byte_count.innerHTML =
         String(window.data_editor_state.editor_metrics.ascii_byte_count)
-      window.data_editor_state.editor_elements.physical.innerHTML = encodeForDisplay(
-        window.data_editor_state.file_content,
-        window.data_editor_state.editor_controls.radix,
-        window.data_editor_state.editor_controls.bytes_per_row
-      )
+      window.data_editor_state.editor_elements.physical.innerHTML =
+        encodeForDisplay(
+          window.data_editor_state.file_content,
+          window.data_editor_state.editor_controls.radix,
+          window.data_editor_state.editor_controls.bytes_per_row
+        )
       window.data_editor_state.editor_elements.logical.innerHTML =
         logicalDisplay(
           data,
@@ -547,7 +576,10 @@ function selectAddressType(addressType: number) {
         )
     }
     window.data_editor_state.editor_elements.physical_offsets.innerHTML =
-      makeOffsetRange(window.data_editor_state.editor_controls.address_numbering, 1)
+      makeOffsetRange(
+        window.data_editor_state.editor_controls.address_numbering,
+        1
+      )
     window.data_editor_state.editor_elements.address.innerHTML =
       makeAddressRange(
         0,
@@ -574,14 +606,18 @@ function selectAddressType(addressType: number) {
       )
     }
     if (window.data_editor_state.file_content) {
-      window.data_editor_state.editor_elements.physical.innerHTML = encodeForDisplay(
-        window.data_editor_state.file_content,
-        16,
-        window.data_editor_state.editor_controls.bytes_per_row
-      )
+      window.data_editor_state.editor_elements.physical.innerHTML =
+        encodeForDisplay(
+          window.data_editor_state.file_content,
+          16,
+          window.data_editor_state.editor_controls.bytes_per_row
+        )
     }
     window.data_editor_state.editor_elements.physical_offsets.innerHTML =
-      makeOffsetRange(window.data_editor_state.editor_controls.address_numbering, 2)
+      makeOffsetRange(
+        window.data_editor_state.editor_controls.address_numbering,
+        2
+      )
     window.data_editor_state.editor_elements.address.innerHTML =
       makeAddressRange(
         0,
@@ -595,7 +631,10 @@ function selectAddressType(addressType: number) {
         window.data_editor_state.editor_controls.address_numbering
       )
     window.data_editor_state.editor_elements.logical_offsets.innerHTML =
-      makeOffsetRange(window.data_editor_state.editor_controls.address_numbering, 1)
+      makeOffsetRange(
+        window.data_editor_state.editor_controls.address_numbering,
+        1
+      )
   }
 }
 
@@ -603,41 +642,45 @@ function updateDataView() {
   const offset = window.data_editor_state.editor_controls.editor_cursor_pos
   const data_view = new DataView(window.data_editor_state.edit_content.buffer)
   const little_endian = window.data_editor_state.editor_controls.little_endian
+  const radix = window.data_editor_state.editor_controls.radix
   const look_ahead = data_view.byteLength - offset
   window.data_editor_state.editor_elements.data_view_offset.innerHTML = String(
-    window.data_editor_state.editor_controls.offset + offset
+    window.data_editor_state.editor_controls.offset +
+      offset +
+      ', encoding: ' +
+      String(radix)
   )
   if (look_ahead >= 8) {
     window.data_editor_state.editor_elements.int64_dv.value = data_view
       .getBigInt64(offset, little_endian)
-      .toString()
+      .toString(radix)
     window.data_editor_state.editor_elements.uint64_dv.value = data_view
       .getBigUint64(offset, little_endian)
-      .toString()
+      .toString(radix)
     window.data_editor_state.editor_elements.float64_dv.value = data_view
       .getFloat64(offset, little_endian)
-      .toString()
+      .toString(radix)
     window.data_editor_state.editor_elements.int32_dv.value = data_view
       .getInt32(offset, little_endian)
-      .toString()
+      .toString(radix)
     window.data_editor_state.editor_elements.uint32_dv.value = data_view
       .getUint32(offset, little_endian)
-      .toString()
+      .toString(radix)
     window.data_editor_state.editor_elements.float32_dv.value = data_view
       .getFloat32(offset, little_endian)
-      .toString()
+      .toString(radix)
     window.data_editor_state.editor_elements.int16_dv.value = data_view
       .getInt16(offset, little_endian)
-      .toString()
+      .toString(radix)
     window.data_editor_state.editor_elements.uint16_dv.value = data_view
       .getUint16(offset, little_endian)
-      .toString()
+      .toString(radix)
     window.data_editor_state.editor_elements.int8_dv.value = data_view
       .getInt8(offset)
-      .toString()
+      .toString(radix)
     window.data_editor_state.editor_elements.uint8_dv.value = data_view
       .getUint8(offset)
-      .toString()
+      .toString(radix)
     window.data_editor_state.editor_elements.b8_dv.hidden = false
     window.data_editor_state.editor_elements.b16_dv.hidden = false
     window.data_editor_state.editor_elements.b32_dv.hidden = false
@@ -650,25 +693,25 @@ function updateDataView() {
     if (look_ahead >= 4) {
       window.data_editor_state.editor_elements.int32_dv.value = data_view
         .getInt32(offset, little_endian)
-        .toString()
+        .toString(radix)
       window.data_editor_state.editor_elements.uint32_dv.value = data_view
         .getUint32(offset, little_endian)
-        .toString()
+        .toString(radix)
       window.data_editor_state.editor_elements.float32_dv.value = data_view
         .getFloat32(offset, little_endian)
-        .toString()
+        .toString(radix)
       window.data_editor_state.editor_elements.int16_dv.value = data_view
         .getInt16(offset, little_endian)
-        .toString()
+        .toString(radix)
       window.data_editor_state.editor_elements.uint16_dv.value = data_view
         .getUint16(offset, little_endian)
-        .toString()
+        .toString(radix)
       window.data_editor_state.editor_elements.int8_dv.value = data_view
         .getInt8(offset)
-        .toString()
+        .toString(radix)
       window.data_editor_state.editor_elements.uint8_dv.value = data_view
         .getUint8(offset)
-        .toString()
+        .toString(radix)
       window.data_editor_state.editor_elements.b8_dv.hidden = false
       window.data_editor_state.editor_elements.b16_dv.hidden = false
       window.data_editor_state.editor_elements.b32_dv.hidden = false
@@ -681,16 +724,16 @@ function updateDataView() {
       if (look_ahead >= 2) {
         window.data_editor_state.editor_elements.int16_dv.value = data_view
           .getInt16(offset, little_endian)
-          .toString()
+          .toString(radix)
         window.data_editor_state.editor_elements.uint16_dv.value = data_view
           .getUint16(offset, little_endian)
-          .toString()
+          .toString(radix)
         window.data_editor_state.editor_elements.int8_dv.value = data_view
           .getInt8(offset)
-          .toString()
+          .toString(radix)
         window.data_editor_state.editor_elements.uint8_dv.value = data_view
           .getUint8(offset)
-          .toString()
+          .toString(radix)
         window.data_editor_state.editor_elements.b8_dv.hidden = false
         window.data_editor_state.editor_elements.b16_dv.hidden = false
       } else {
@@ -702,10 +745,10 @@ function updateDataView() {
         if (look_ahead >= 1) {
           window.data_editor_state.editor_elements.int8_dv.value = data_view
             .getInt8(offset)
-            .toString()
+            .toString(radix)
           window.data_editor_state.editor_elements.uint8_dv.value = data_view
             .getUint8(offset)
-            .toString()
+            .toString(radix)
           window.data_editor_state.editor_elements.b8_dv.hidden = false
         } else {
           window.data_editor_state.editor_elements.b64_dv.hidden = true
@@ -862,16 +905,24 @@ function logicalDisplay(bytes: ArrayBuffer, bytes_per_row: number): string {
 }
 
 function radixBytePad(radix: number): number {
-  switch(radix) {
-    case 2: return 8
-    case 8: return 3
-    case 10: return 3
-    case 16: return 2
+  switch (radix) {
+    case 2:
+      return 8
+    case 8:
+      return 3
+    case 10:
+      return 3
+    case 16:
+      return 2
   }
   return 0
 }
 
-function encodeForDisplay(arr: Uint8Array, radix: number, bytes_per_row: number): string {
+function encodeForDisplay(
+  arr: Uint8Array,
+  radix: number,
+  bytes_per_row: number
+): string {
   let result = ''
   if (arr.byteLength > 0) {
     const pad = radixBytePad(radix)
